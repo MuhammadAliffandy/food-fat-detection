@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if session.get('last_annotated_image') %}
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h2>Deteksi dan Hasil</h2>
+        <p class="stat-label">Hasil deteksi terbaru dari model YOLOv8 (Standar takaran 100 gram)</p>
+    </div>
+    
+    <div class="grid grid-2" style="gap: 2rem; align-items: start;">
+        <!-- Kiri: Gambar dengan anotasi -->
+        <div>
+            <h4 style="margin-bottom: 1rem;">Hasil deteksi jenis makanan</h4>
+            <div style="background-color: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem; text-align: center;">
+                <img src="{{ url_for('static', filename='uploads/' + session.get('last_annotated_image')) }}" alt="Anotasi Hasil Deteksi" class="image-preview" style="max-height: 400px; width: auto; max-width: 100%; border-radius: 4px; display: inline-block;">
+            </div>
+        </div>
+
+        <!-- Kanan: Tabel Informasi Nutrisi -->
+        <div>
+            <h4 style="margin-bottom: 1rem;">Detail Informasi</h4>
+            {% if session.get('latest_foods') %}
+            <table class="nutrition-table" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border);">
+                        <th style="padding: 0.75rem; text-align: left;">Makanan</th>
+                        <th style="padding: 0.75rem; text-align: center;">Kalori<br>(kkal)</th>
+                        <th style="padding: 0.75rem; text-align: center;">Protein<br>(g)</th>
+                        <th style="padding: 0.75rem; text-align: center;">Lemak<br>(g)</th>
+                        <th style="padding: 0.75rem; text-align: center;">Karbohidrat<br>(g)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for food in session.get('latest_foods') %}
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.75rem; font-weight: 500;">{{ food.food_name }}</td>
+                        <td style="padding: 0.75rem; text-align: center;">{{ food.calories }}</td>
+                        <td style="padding: 0.75rem; text-align: center;">{{ food.protein }}</td>
+                        <td style="padding: 0.75rem; text-align: center;">{{ food.fat }}</td>
+                        <td style="padding: 0.75rem; text-align: center;">{{ food.carbs }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div style="background-color: var(--surface); border: 1px dashed var(--border); padding: 2rem; border-radius: 8px; text-align: center;">
+                <p class="stat-label">Tidak ada detail nutrisi yang tersedia untuk gambar ini.</p>
+            </div>
+            {% endif %}
+            
+            <form action="{{ url_for('upload_image') }}" method="POST" enctype="multipart/form-data" style="margin-top: 2rem;">
+                <h4 style="margin-bottom: 1rem;">Unggah Gambar Baru</h4>
+                <div class="upload-area" style="margin-bottom: 1rem;">
+                    <input type="file" name="file" id="file" accept="image/png, image/jpeg, image/jpg, image/heic, .heic" required>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Jalankan Inferensi</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Monitoring Section -->
+<h2 style="margin-top: 2rem; margin-bottom: 1rem; border-bottom: 2px solid var(--border); padding-bottom: 0.5rem;">Monitoring</h2>
+<div class="grid grid-2">
+    <!-- Kolom Kiri: Input dan Target -->
+    <div>
+        {% if not session.get('last_annotated_image') %}
+        <div class="card">
+            <div class="card-header">
+                <h2>Analisis Makanan</h2>
+                <p class="stat-label">Unggah gambar untuk Deteksi YOLOv8</p>
+            </div>
+            <form action="{{ url_for('upload_image') }}" method="POST" enctype="multipart/form-data">
+                <div class="upload-area">
+                    <input type="file" name="file" id="file" accept="image/png, image/jpeg, image/jpg, image/heic, .heic" required>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Jalankan Inferensi</button>
+            </form>
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Target Harian</h2>
+                <p class="stat-label">Atur target nutrisi harian Anda</p>
+            </div>
+            <form action="{{ url_for('update_settings') }}" method="POST">
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label>Kalori (kkal)</label>
+                        <input type="number" name="calories" value="{{ target.target_calories }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Protein (g)</label>
+                        <input type="number" name="protein" value="{{ target.target_protein }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Karbohidrat (g)</label>
+                        <input type="number" name="carbs" value="{{ target.target_carbs }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Lemak (g)</label>
+                        <input type="number" name="fat" value="{{ target.target_fat }}" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-outline" style="width: 100%;">Perbarui Target</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Kolom Kanan: Ringkasan Hari Ini -->
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <h2>Ringkasan Hari Ini</h2>
+                <p class="stat-label">Pemantauan nutrisi secara langsung</p>
+            </div>
+            
+            <div class="grid grid-2" style="margin-bottom: 1.5rem;">
+                <div class="stat-box">
+                    <div class="stat-label">Kalori</div>
+                    <div class="stat-value {% if current.calories > target.target_calories %}over-target{% endif %}">
+                        {{ current.calories | round(1) }}
+                    </div>
+                    <div class="stat-target">/ {{ target.target_calories }} kkal</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Protein</div>
+                    <div class="stat-value">{{ current.protein | round(1) }}</div>
+                    <div class="stat-target">/ {{ target.target_protein }} g</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Karbohidrat</div>
+                    <div class="stat-value">{{ current.carbs | round(1) }}</div>
+                    <div class="stat-target">/ {{ target.target_carbs }} g</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Lemak</div>
+                    <div class="stat-value">{{ current.fat | round(1) }}</div>
+                    <div class="stat-target">/ {{ target.target_fat }} g</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Catatan Terbaru (Hari Ini)</h2>
+            </div>
+            {% if logs %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Waktu</th>
+                        <th>Makanan</th>
+                        <th>Kkal</th>
+                        <th>Makro (P/K/L)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td style="color: var(--text-muted); font-size: 0.875rem;">
+                            {{ log.consumed_at.split(' ')[1][:5] }}
+                        </td>
+                        <td style="font-weight: 500;">{{ log.food_name }}</td>
+                        <td>{{ log.calories }}</td>
+                        <td style="font-size: 0.875rem;">
+                            {{ log.protein }}g / {{ log.carbs }}g / {{ log.fat }}g
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="color: var(--text-muted); text-align: center; padding: 2rem 0;">Belum ada makanan yang dicatat hari ini.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

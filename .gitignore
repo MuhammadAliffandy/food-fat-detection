@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environments
+venv/
+env/
+.env/
+venv*/
+.venv*/
+
+# API Keys and Secrets (Privacy)
+.env
+*.env
+web_app/.env
+secrets.json
+*.pem
+
+# Large Files and Machine Learning Models
+*.pt
+best.pt
+*.onnx
+*.weights
+*.h5
+
+# Datasets and Notebook checkpoints
+DATASET*/
+DATASET MAKANAN*/
+NewDataset/
+*.ipynb
+.ipynb_checkpoints/
+runs/
+yolov8*/
+
+# Databases
+*.sqlite
+*.sqlite3
+*.db
+web_app/nutrition.db
+
+# User Uploads (Ignore contents but keep the directory)
+web_app/static/uploads/*
+!web_app/static/uploads/.gitkeep
+
+# macOS System Files
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*

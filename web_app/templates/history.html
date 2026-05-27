@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2>Riwayat Makanan</h2>
+            <p class="stat-label">Semua catatan makanan yang Anda unggah</p>
+        </div>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline" style="padding: 0.5rem 1rem;">Kembali ke Dasbor</a>
+    </div>
+
+    {% if logs %}
+    <table style="margin-top: 1rem;">
+        <thead>
+            <tr>
+                <th>Waktu Konsumsi</th>
+                <th>Makanan</th>
+                <th>Calories</th>
+                <th>Makro (P/K/L)</th>
+                <th style="text-align: right;">Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td style="color: var(--text-muted);">{{ log.consumed_at }}</td>
+                <td style="font-weight: 500; font-size: 1.1rem;">{{ log.food_name }}</td>
+                <td><span style="background-color: var(--primary-light); color: var(--primary); padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600;">{{ log.calories }} kkal</span></td>
+                <td>{{ log.protein }}g / {{ log.carbs }}g / {{ log.fat }}g</td>
+                <td style="text-align: right;">
+                    <form action="{{ url_for('delete_log', log_id=log.id) }}" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-outline" style="padding: 0.25rem 0.75rem; border-color: var(--error); color: var(--error);" onclick="return confirm('Apakah Anda yakin ingin menghapus catatan ini?');">Hapus</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="text-align: center; padding: 4rem 0;">
+        <p style="color: var(--text-muted); font-size: 1.1rem;">Belum ada riwayat makanan yang tercatat pada sesi ini.</p>
+        <a href="{{ url_for('dashboard') }}" class="btn" style="margin-top: 1rem; display: inline-block;">Catat Makanan Pertama Anda</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
