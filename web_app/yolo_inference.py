@@ -40,34 +40,41 @@ def run_inference(image_path, output_dir):
         
         # 1. Check if it's an Object Detection model (has bounding boxes)
         if r.boxes is not None and len(r.boxes) > 0:
-            # Sort boxes by confidence (highest first) and just take the TOP 1
-            sorted_boxes = sorted(r.boxes, key=lambda x: x.conf[0].item(), reverse=True)
-            top_box = sorted_boxes[0]
-            
-            class_id = int(top_box.cls[0].item())
-            class_name = model.names[class_id]
-            conf = top_box.conf[0].item()
-            
-            detected_classes.append(class_name)
-            nutrition_data = fatsecret_api.fetch_nutrition_for_food(class_name)
-            
-            # Draw the bounding box
-            x1, y1, x2, y2 = map(int, top_box.xyxy[0].cpu().numpy())
-            cv2.rectangle(annotated_image, (x1, y1), (x2, y2), (0, 255, 0), 3)
-            
-            # Draw the Class Label
-            label = f"{class_name} ({conf*100:.1f}%)"
-            cv2.putText(annotated_image, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
-            
-            if nutrition_data:
-                text = f"{nutrition_data['calories']} kcal | P:{nutrition_data['protein']}g C:{nutrition_data['carbs']}g"
-                font = cv2.FONT_HERSHEY_SIMPLEX
-                font_scale = 0.5
-                thickness = 1
-                (text_width, text_height), baseline = cv2.getTextSize(text, font, font_scale, thickness)
-                text_x, text_y = x1, y1 + 25 
-                cv2.rectangle(annotated_image, (text_x, text_y - text_height - 5), (text_x + text_width, text_y + baseline - 5), (0, 0, 0), -1)
-                cv2.putText(annotated_image, text, (text_x, text_y - 5), font, font_scale, (255, 255, 255), thickness)
+            for box in r.boxes:
+                class_id = int(box.cls[0].item())
+                class_name = model.names[class_id]
+                conf = box.conf[0].item()
+                
+                detected_classes.append(class_name)
+                nutrition_data = fatsecret_api.fetch_nutrition_for_food(class_name)
+                
+                # Draw the bounding box
+                x1, y1, x2, y2 = map(int, box.xyxy[0].cpu().numpy())
+                
+                # Generate a unique color based on class_id
+                color = ((class_id * 80) % 255, (class_id * 150 + 50) % 255, (class_id * 200 + 100) % 255)
+                
+                cv2.rectangle(annotated_image, (x1, y1), (x2, y2), color, 3)
+                
+                # Draw the Class Label
+                label = f"{class_name} ({conf:.2f})"
+                cv2.putText(annotated_image, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+                
+                # Optionally draw nutrition data below the box if you want it on the image
+                if nutrition_data:
+                    text = f"{nutrition_data['calories']} kcal | P:{nutrition_data['protein']}g C:{nutrition_data['carbs']}g"
+                    font = cv2.FONT_HERSHEY_SIMPLEX
+                    font_scale = 0.5
+                    thickness = 1
+                    (text_width, text_height), baseline = cv2.getTextSize(text, font, font_scale, thickness)
+                    text_x, text_y = x1, y2 + 25 
+                    
+                    # Ensure text stays within image bounds (rough check)
+                    if text_y > annotated_image.shape[0]:
+                        text_y = y1 - 30 # put it above the label if it goes off bottom
+                        
+                    cv2.rectangle(annotated_image, (text_x, text_y - text_height - 5), (text_x + text_width, text_y + baseline - 5), (0, 0, 0), -1)
+                    cv2.putText(annotated_image, text, (text_x, text_y - 5), font, font_scale, (255, 255, 255), thickness)
                     
         # 2. Check if it's an Image Classification model (has probabilities instead of boxes)
         elif r.probs is not None:

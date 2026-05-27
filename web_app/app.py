@@ -9,7 +9,7 @@ import yolo_inference
 import fatsecret_api
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24) # Used for securely signing the session cookie
+app.secret_key = 'super_secret_key_for_development' # Fixed key so session persists on restart
 
 # Configuration for image uploads
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'uploads')
