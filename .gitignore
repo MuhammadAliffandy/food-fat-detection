@@ -19,8 +19,6 @@ secrets.json
 *.pem
 
 # Large Files and Machine Learning Models
-*.pt
-best.pt
 *.onnx
 *.weights
 *.h5
@@ -29,7 +27,6 @@ best.pt
 DATASET*/
 DATASET MAKANAN*/
 NewDataset/
-*.ipynb
 .ipynb_checkpoints/
 runs/
 yolov8*/
