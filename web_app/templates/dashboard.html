@@ -148,6 +148,7 @@
                             <th>Makanan</th>
                             <th>Kkal</th>
                             <th>Makro (P/K/L)</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -160,6 +161,11 @@
                             <td>{{ log.calories }}</td>
                             <td style="font-size: 0.875rem;">
                                 {{ log.protein }}g / {{ log.carbs }}g / {{ log.fat }}g
+                            </td>
+                            <td>
+                                <form action="{{ url_for('delete_log', log_id=log.id) }}" method="POST" style="display: inline;">
+                                    <button type="submit" style="color: #ef4444; background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 0.2rem;" title="Hapus">&times;</button>
+                                </form>
                             </td>
                         </tr>
                         {% endfor %}

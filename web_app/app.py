@@ -116,8 +116,9 @@ def upload_image():
         foods_added = 0
         latest_foods = []
         
-        # 2. For each detected food, fetch nutrition and save to DB
-        for food_name in detected_foods:
+        # 2. For each UNIQUE detected food, fetch nutrition and save to DB
+        unique_foods = list(set(detected_foods))
+        for food_name in unique_foods:
             nutrition_data = fatsecret_api.fetch_nutrition_for_food(food_name)
             
             if nutrition_data:
@@ -170,7 +171,7 @@ def delete_log(log_id):
     session_id = session['session_id']
     database.delete_food_log(session_id, log_id)
     flash("Riwayat makanan dihapus.", "success")
-    return redirect(url_for('history'))
+    return redirect(request.referrer or url_for('dashboard'))
 
 @app.route('/history')
 def history():
@@ -191,8 +192,15 @@ def history():
     ''', (session_id,))
     all_logs = cursor.fetchall()
     conn.close()
+    # Group logs by date
+    grouped_logs = {}
+    for log in all_logs:
+        date_str = log['consumed_at'].split(' ')[0] # Extract YYYY-MM-DD
+        if date_str not in grouped_logs:
+            grouped_logs[date_str] = []
+        grouped_logs[date_str].append(log)
     
-    return render_template('history.html', logs=all_logs)
+    return render_template('history.html', grouped_logs=grouped_logs)
 
 if __name__ == '__main__':
     # Run the Flask application in debug mode for development
