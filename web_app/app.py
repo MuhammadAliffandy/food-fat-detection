@@ -97,16 +97,17 @@ def upload_image():
                 flash(f"Gagal mengkonversi gambar HEIC: {e}", "error")
                 return redirect(url_for('dashboard'))
         
+        # Clear previous session data for upload to ensure UI resets
+        session.pop('latest_foods', None)
+        session.pop('last_annotated_image', None)
+
         # 1. Run YOLOv8 Inference
         detected_foods, annotated_image_path = yolo_inference.run_inference(filepath, app.config['UPLOAD_FOLDER'])
         
         # ALWAYS store the path so the user can see the image, even if no food is detected
         if annotated_image_path:
             session['last_annotated_image'] = os.path.basename(annotated_image_path)
-            
-        # Clear previous latest foods
-        if 'latest_foods' in session:
-            session.pop('latest_foods')
+        
         
         if not detected_foods:
             flash("Tidak ada makanan yang terdeteksi pada gambar. Coba gambar lain!", "warning")
@@ -186,7 +187,8 @@ def history():
     conn = database.get_db_connection()
     cursor = conn.cursor()
     cursor.execute('''
-        SELECT * FROM food_history 
+        SELECT id, session_id, food_name, calories, protein, carbs, fat, datetime(consumed_at, 'localtime') as consumed_at 
+        FROM food_history 
         WHERE session_id = ? 
         ORDER BY consumed_at DESC
     ''', (session_id,))

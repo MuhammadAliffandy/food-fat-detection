@@ -117,10 +117,10 @@ def get_daily_history(session_id, target_date=None):
     conn = get_db_connection()
     cursor = conn.cursor()
     
-    # SQLite datetime functions let us match the date part of the timestamp
+    # SQLite datetime functions let us match the date part of the timestamp, converting from UTC to local
     cursor.execute('''
         SELECT * FROM food_history 
-        WHERE session_id = ? AND date(consumed_at) = ?
+        WHERE session_id = ? AND date(consumed_at, 'localtime') = ?
         ORDER BY consumed_at DESC
     ''', (session_id, target_date))
     
