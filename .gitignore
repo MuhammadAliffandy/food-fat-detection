@@ -27,6 +27,7 @@ secrets.json
 DATASET*/
 DATASET MAKANAN*/
 NewDataset/
+NewDatasetV2/
 .ipynb_checkpoints/
 runs/
 yolov8*/
