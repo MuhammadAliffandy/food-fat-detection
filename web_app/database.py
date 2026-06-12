@@ -119,7 +119,8 @@ def get_daily_history(session_id, target_date=None):
     
     # SQLite datetime functions let us match the date part of the timestamp, converting from UTC to local
     cursor.execute('''
-        SELECT * FROM food_history 
+        SELECT id, session_id, food_name, calories, protein, carbs, fat, datetime(consumed_at, 'localtime') as consumed_at 
+        FROM food_history 
         WHERE session_id = ? AND date(consumed_at, 'localtime') = ?
         ORDER BY consumed_at DESC
     ''', (session_id, target_date))
