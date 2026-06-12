@@ -3,7 +3,7 @@
 {% block content %}
 
 <!-- SECTION 1: HEADER / INTRO (PARALLAX) -->
-<div style="background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 4rem 2rem; border-radius: 16px; margin-bottom: 2.5rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); text-align: center; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+<div style="background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8)), url('{{ url_for('static', filename='images/bg.jpg') }}'); background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat; padding: 4rem 2rem; border-radius: 16px; margin-bottom: 2.5rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2); text-align: center; position: relative; overflow: hidden; color: #ffffff;">
     <h1 style="margin-top: 0; font-size: 3.5rem; font-weight: 900; line-height: 1.2; margin-bottom: 0.5rem; position: relative; z-index: 1; letter-spacing: -0.02em; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
         Nutrilens
     </h1>
@@ -16,11 +16,11 @@
 </div>
 
 <!-- SECTION 1: DETEKSI DAN HASIL -->
-<div style="background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 2rem; border-radius: 16px; margin-bottom: 3rem; border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+<div style="background-color: #f3f4f6; padding: 2rem; border-radius: 12px; margin-bottom: 3rem; border: 1px solid #d1d5db;">
     <h2 style="margin-top: 0; margin-bottom: 1.5rem; color: #1f2937; border-bottom: 2px solid #9ca3af; padding-bottom: 0.5rem;">Deteksi dan Hasil</h2>
     
     <!-- Upload Form -->
-    <div class="card" style="margin-bottom: 2rem;">
+    <div class="card" style="background-color: #f0fdfa; border-color: #ccfbf1; margin-bottom: 2rem;">
         <h4 style="margin-top: 0; margin-bottom: 0.5rem; color: #1f2937;">Analisis Makanan</h4>
         <p class="stat-label" style="margin-bottom: 1rem;">Unggah gambar untuk Deteksi YOLOv8</p>
         <form action="{{ url_for('upload_image') }}" method="POST" enctype="multipart/form-data">
@@ -35,7 +35,7 @@
     {% if session.get('last_annotated_image') %}
     <div class="grid grid-2" style="gap: 2rem; align-items: start;">
         <!-- Kiri: Gambar dengan anotasi -->
-        <div class="card" style="margin-bottom: 0;">
+        <div class="card" style="background-color: #eff6ff; border-color: #dbeafe; margin-bottom: 0;">
             <h4 style="margin-top: 0; margin-bottom: 1rem; color: #1f2937; text-align: center;">Hasil deteksi jenis makanan</h4>
             <div style="text-align: center;">
                 <img src="{{ url_for('static', filename='uploads/' + session.get('last_annotated_image')) }}" alt="Anotasi Hasil Deteksi" style="width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
@@ -43,7 +43,7 @@
         </div>
 
         <!-- Kanan: Tabel Informasi Nutrisi -->
-        <div class="card" style="margin-bottom: 0;">
+        <div class="card" style="background-color: #fefce8; border-color: #fef08a; margin-bottom: 0;">
             <h4 style="margin-top: 0; margin-bottom: 1rem; text-align: center; color: #1f2937;">Detail Informasi</h4>
             {% if session.get('latest_foods') %}
             <table style="width: 100%; border-collapse: collapse; border: 1px solid #cbd5e1; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
@@ -80,13 +80,13 @@
 </div>
 
 <!-- SECTION 2: MONITORING -->
-<div style="background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 2rem; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+<div style="background-color: #f9fafb; padding: 2rem; border-radius: 12px; border: 1px solid #e5e7eb;">
     <h2 style="margin-top: 0; margin-bottom: 1.5rem; color: #1f2937; border-bottom: 2px solid #d1d5db; padding-bottom: 0.5rem;">Monitoring</h2>
     
     <div class="grid grid-2">
         <!-- Kolom Kiri: Target Harian -->
         <div>
-            <div class="card" style="box-shadow: none; border-color: #d1d5db;">
+            <div class="card" style="background-color: #faf5ff; border-color: #e9d5ff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
                 <div class="card-header">
                     <h2>Target Harian</h2>
                     <p class="stat-label">Atur target nutrisi harian Anda</p>
@@ -117,7 +117,7 @@
 
         <!-- Kolom Kanan: Ringkasan & Catatan -->
         <div>
-            <div class="card" style="box-shadow: none; border-color: #d1d5db;">
+            <div class="card" style="background-color: #ffffff; border-color: #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
                 <div class="card-header">
                     <h2>Ringkasan Hari Ini</h2>
                     <p class="stat-label">Pemantauan nutrisi secara langsung</p>
@@ -149,7 +149,7 @@
                 </div>
             </div>
 
-            <div class="card" style="box-shadow: none; border-color: #d1d5db;">
+            <div class="card" style="background-color: #fff1f2; border-color: #fecdd3; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
                 <div class="card-header">
                     <h2>Catatan Terbaru (Hari Ini)</h2>
                 </div>
